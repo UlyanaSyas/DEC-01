@@ -78,10 +78,10 @@ Select
      then '1'
      else '0'
      end) as "2007",
-     sum(case when (to_char(e.hire_date, 'YYYY')) = '2008'
+     sum(case when (to_char(e.hire_date, 'YYYY')) = '2009'
      then '1'
      else '0'
-     end) as "2008",
+     end) as "2009",
      count(*) as "Total number of employees"
 From 
     hr.employees e;

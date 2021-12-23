@@ -2,128 +2,106 @@
 -- 1
 
 Select
-    max(e.salary) as "Max",
-    min(e.salary) as "Min",
-    round(avg(e.salary)) as "Average"
+    round(max(e.salary)) as "Max", -- масимальная ЗП, функция round округляет значение
+    round(min(e.salary)) as "Min", -- минимальная ЗП
+    round(sum(e.salary)) as "Sum", -- сумма ЗП всех сотрудников
+    round(avg(e.salary)) as "Average" -- средняя ЗП сотрудников
 From
     hr.employees e;
     
 -- 2
 
 Select
-    max(e.salary) as "Max",
-    min(e.salary) as "Min",
+    round(max(e.salary)) as "Max",
+    round(min(e.salary)) as "Min",
+    round(sum(e.salary)) as "Sum",
     round(avg(e.salary)) as "Average",
-    j.job_title as "EMP"
-From 
+    job_title as "EMP" -- должность сотрудника
+From
     hr.employees e
 Join 
-    hr.jobs j
-On j.job_id = e.job_id
-Group by j.job_title;
+    hr.jobs j -- связать с таблицей
+On j.job_id = e.job_id -- связали колонки сотрудников
+Group by j.job_title; -- группировка
 
     
 -- 3
 
 Select 
-    count (e.job_id) as "Amount of workers"
+    e.job_id,
+    count (e.job_id) as "Number" -- функция count посчитала количевство сотрудников
 From employees e
-Where job_id='&jobs';
+Group by e.job_id; -- группировка по должности
+
 
 -- 4
 
 Select 
-    e.job_id,
-    count (e.job_id) as "Number"
+    count (e.job_id) as "Amount of workers" -- функция count посчитала количевство сотрудников
 From employees e
-Group by e.job_id;
+Where job_id='&jobs'; -- функция амперсанд, взятая в кавычки (благодаря чему мы можем ввести текст), экранировала сотрудников по должности
 
 -- 5
 
 Select
-   count(e.manager_id) as "Number of managers"
+   count(e.manager_id) as "Number of managers" -- количевство сотрудников, которые занимают должность менеджера
 From 
     hr.employees e;
     
 -- 6
     
 Select
-    max(e.salary) - min(e.salary) as "DIFFERENCE"
+    max(e.salary) - min(e.salary) as "DIFFERENCE" -- разница между самой высокой и самой низкой ЗП
 From hr.employees e;
 
 -- 7
 
 Select
-   e.manager_id as "Manager",
-   min (e.salary) as "Min salary",
-   count(*) as "Manager amount"
+   e.manager_id as "Manager", -- переименовывание колонки
+   min (e.salary) as "Min salary", -- минимальная ЗП сотрудников
+   count(*) as "Manager amount" -- функция count посчитала сотрудников
 From hr.employees e
-Group by e.manager_id
-     having e.manager_id is not null and
-     min (e.salary) > 6000
-Order by min (e.salary);
+Group by e.manager_id -- группировка сотрудников
+     having e.manager_id is not null and -- после группировки невозжно применить where(т.е. где), используется having, где менеджеры не null, и
+     min (e.salary) > 6000 -- где минимальная ЗП больше 6000
+Order by min (e.salary); -- и сортировка по минимальной ЗП в порядке возрастания (от меньшего к большему)
 
 -- 8
 
 Select
-     sum(case when (to_char(e.hire_date, 'YYYY')) = '2005'
-     then '1'
-     else '0'
-     end) as "2005",
-     sum(case when (to_char(e.hire_date, 'YYYY')) = '2006'
-     then '1'
-     else '0'
-     end) as "2006",
-     sum(case when (to_char(e.hire_date, 'YYYY')) = '2007'
-     then '1'
-     else '0'
-     end) as "2007",
-     sum(case when (to_char(e.hire_date, 'YYYY')) = '2009'
-     then '1'
-     else '0'
-     end) as "2009",
-     count(*) as "Total number of employees"
-From 
-    hr.employees e;
+    count(*) as "Amount", -- функция count считает колонки с сотрудниками (всего сотрудников)
+    sum(decode(to_char(e.hire_date, 'YYYY'),2005, 1, 0)) as "2005", -- дата приёма на работу в годах, преобразовывание в текст, функция декод
+    sum(decode(to_char(e.hire_date, 'YYYY'),2006, 1, 0)) as "2006", -- принимает значение принятых в этом году за 1, не в этом году принимает за 0
+    sum(decode(to_char(e.hire_date, 'YYYY'),2007, 1, 0)) as "2007", -- функция sum суммирует количевство принятых в этом году (1)  
+    sum(decode(to_char(e.hire_date, 'YYYY'),2009, 1, 0)) as "2009"
+From hr.employees e;
     
 -- 9
     
-Select
-    count(*) as "Amount",
-    sum(decode(to_char(e.hire_date, 'YYYY'),2005, 1, 0)) as "2005",
-    sum(decode(to_char(e.hire_date, 'YYYY'),2006, 1, 0)) as "2006",
-    sum(decode(to_char(e.hire_date, 'YYYY'),2007, 1, 0)) as "2007",
-    sum(decode(to_char(e.hire_date, 'YYYY'),2009, 1, 0)) as "2009"
-From hr.employees e;
+Select 
+    e.job_id as "Job ID", -- должность сотрудников
+    nvl(sum(case when e.department_id='20' then e.salary end),0) "Department 20", -- 1. функция case выбрала сотрудников из определённого департамента и их ЗП
+    nvl(sum(case when e.department_id='50' then e.salary end),0) "Department 50", -- (т.е. если значение номера департамента - истина, то берётся salary департамента)
+    nvl(sum(case when e.department_id='80' then e.salary end),0) "Department 80", -- 2. функция sum суммирует ЗП сотрудников департамента
+    nvl(sum(case when e.department_id='90' then e.salary end),0) "Department 90", -- 3. функция nvl конвертит null в значение 0 
+    nvl(sum(case when e.department_id='90' then e.salary end),0) + 
+    nvl(sum(case when e.department_id='50' then e.salary end),0) + 
+    nvl(sum(case when e.department_id='80' then e.salary end),0) + 
+    nvl(sum(case when e.department_id='20' then e.salary end),0) as "Total salary" -- 4. сумма ЗП сотрудников из департаметов
+From hr.employees e
+Group by e.job_id; -- группировка по должности
+
 
 -- 10
 
-SELECT 
-    d.department_name as "Suspected",
-    min(e.salary) AS "Min",
-    max(e.salary) AS "Max",
-    count(*)
+Select 
+    d.department_name as "Должность",
+    min(e.salary) as "Min",
+    max(e.salary) as "Max",
+    count(*) as "Количество сотрудников"
 From hr.employees e
-Join hr.departmens d 
-    On e.department_id = department_id 
-Group by d.department_name
-having (max(e.salary )/min(e.salary)) >=1.7
-Order by d.department_name;
-
-/*
-SELECT 
-	d.DEPARTMENT_NAME ,
-	j.JOB_TITLE ,
-	ROUND(AVG(e.SALARY ) ) AS "Average salary in dept.",
-	max(e.SALARY ) AS "Max salary in dept.",
-	min(e.SALARY ) AS "Min salary in dept.",
-	count(*) AS "cnt"
-FROM hr.EMPLOYEES e
-JOIN hr.DEPARTMENTS d 
-	ON e.DEPARTMENT_ID = d.DEPARTMENT_ID 
-JOIN hr.JOBS j 
-	ON e.JOB_ID = j.JOB_ID 
-GROUP BY d.DEPARTMENT_NAME, j.JOB_TITLE  
-having (max(e.SALARY )/ROUND(AVG(e.SALARY ))) >=1.5
-ORDER BY d.DEPARTMENT_NAME, j.JOB_TITLE  ; 
-*/
+Join hr.departments d -- связать таблицы
+    On e.department_id = d.department_id -- связь колонок 
+Group by d.department_name -- группировка по должности сотрудников 
+    having (max(e.salary )/min(e.salary)) >=1.7 -- у которых минимальная ЗП больше, чем максимальная, умноженная на 1,7 и выше
+Order by d.department_name; --сортировка по должности

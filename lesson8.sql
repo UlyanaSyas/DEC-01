@@ -57,7 +57,7 @@ From hr.employees e;
 -- 7
 
 Select
-   e.manager_id as "Manager", -- переименовывание колонки
+   e.manager_id as "Manager", -- переименование колонки
    min (e.salary) as "Min salary", -- минимальная ЗП сотрудников
    count(*) as "Manager amount" -- функция count посчитала сотрудников
 From hr.employees e

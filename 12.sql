@@ -102,9 +102,17 @@ Insert into hr.my_employee
 (id, first_name, last_name, userid, salary)
 Values (&id, '&first_name', '&last_name', '&userid', &salary);
 
--- 9. Не поняла этого задания. 
-/*Populate the table with the next two rows of the sample data listed in step 3 by running the
+-- 9. 
+/*Populate the table with the next two rows of the sample data listed in step 8 by running the
 INSERT statement in the script that you created. */
+
+Insert into hr.my_employee
+(id, first_name, last_name, userid, salary)
+Values (&id, '&first_name', '&last_name', '&userid', &salary);
+
+Insert into hr.my_employee
+(id, first_name, last_name, userid, salary)
+Values (&id, '&first_name', '&last_name', '&userid', &salary);
 
 -- 10. Commit your changes.
 
@@ -124,7 +132,7 @@ Where salary < 900;
 
 -- 13. Verify your changes to the table.
 
-Select * From my_employee;
+Select * From hr.my_employee;
 
 -- 14. Delete Betty Dancs from the MY_EMPLOYEE table.
 
@@ -141,13 +149,41 @@ Commit;
 
 -- 16. Commit all pending changes.
 
-Commit;
+Commit;                  -- он тут и нахер не нужен
 
--- 17. Опять не поняла.
-/* Populate the table with the last row of the sample data listed in step 3 by using the
-statements in the script that you created in step 6. Run the statements in the script.
+-- 17.
+/* Populate the table with the last row of the sample data listed in step 8 by using the
+statements in the script that you created in step 11. Run the statements in the script.
 Note: Perform next 6 steps (18-23) in one session only.
 */
+
+Insert into hr.my_employee
+(id, first_name, last_name, userid, salary)
+Values (&id, '&first_name', '&last_name', '&userid', &salary);
+
+-- 17.1
+
+Savepoint 2;
+
+-- 17.2
+
+Delete From hr.my_employee;
+
+-- 17.3
+
+Select * From my_employee;
+
+-- 17.4
+
+Rollback to 2;
+
+-- 17.5
+
+Select * From my_employee;
+
+-- 17.6
+
+Commit;
 
 -- 18. Mark an intermediate point in the processing of the transaction.
 
@@ -156,6 +192,8 @@ Savepoint 1;
 -- 19. Delete all the rows from the MY_EMPLOYEE table.
 
 Delete From hr.my_employee;
+
+-- Truncate table hr.my_employee;
 
 -- 20. Confirm that the table is empty.
 
@@ -173,14 +211,40 @@ Select * From my_employee;
 
 Commit;
 
--- 24. Cнова не поняла.
+-- 24.
 /*Modify the query 8 script such that the USERID is generated automatically by
 concatenating the first letter of the first name and the first seven characters of the last
 name. The generated USERID must be in lowercase. Therefore, the script should not
 prompt for the USERID. Save this script.
 */
 
+
+Update hr.my_employee m
+Set m.userid =  (Select 
+                lower(substr(m.first_name,1,1)) || lower(substr(m.last_name,1,7)) as "userid"
+                From hr.MY_EMPLOYEE m 
+                Where ID = &ID)
+Where ID = &ID;
+
+
+/*  У меня эта херня не работает, почему????????
+Insert into hr.my_employee
+(id, first_name, last_name, userid, salary)
+Values (999, '&&first_name', '&&last_name', substr('&&first_name',1,1), || substr('&&last_name',1,7), salary;
+*/
+
 -- 25. Run the previous script to insert the following record: 6, Anthony, Mark, manthoney, 1230.
+
+Insert into hr.my_employee
+(id, first_name, last_name, userid, salary)
+Values (6, 'Anthony', 'Mark', 'manhoney', 1230);
+
+Update hr.my_employee m
+Set m.userid =  (Select 
+                lower(substr(m.first_name,1,1)) || lower(substr(m.last_name,1,7)) as "userid"
+                From hr.MY_EMPLOYEE m 
+                Where ID = 6)
+Where ID = 6;
 
 -- 26. Confirm that the new row was added with the correct USERID.
 

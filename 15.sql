@@ -158,17 +158,15 @@ Create a report that shows the name, location, and number of employees for each
 department. Make sure that the report also includes department_IDs without employees.
 */
 
-Select 
-    count(*) "Количество",
-    NVL(d.location_id, 0) "Местонахождение",
-    NVL(e.department_id, 0) "Номер департамента",
-    NVL(d.department_name, 0) "Название отдела"
-From hr.employees e
-Inner join hr.departments d
-On e.department_id = d.department_id
-Group by d.department_name, d.location_id, e.department_id
-Order by e.department_id;
-
+Select
+    d.department_name "Название департамента",
+    d.location_id "Локация",
+    count(e.employee_id) "Количество чуваков"
+From hr.departments d
+Left join hr.employees e
+On d.department_id = e.department_id
+Group by d.department_name, d.location_id
+Order by "Количество чуваков" desc;
 
 --10.
 /*
@@ -228,7 +226,8 @@ expressed in terms of thousands of dollars.
 Select
     e.last_name,
     e.salary,
-    concat((e.salary/1000), '$') 
+    trunc(e.salary/1000) ||
+    'K $' 
 From hr.employees e;
 
 --14.
@@ -278,6 +277,17 @@ Create a report that displays the departments where no sales representatives wor
 the department number, department name, manager ID, and location in the output.
 */
 
+Select
+    d.department_id,
+    d.department_name,
+    d.manager_id,
+    l.city
+From
+    hr.departments d
+Join hr.locations l
+On d.location_id = l.location_id
+Order by d.department_id;
+
 --18.
 /*
 Create the following statistical reports for the HR department. Include the department
@@ -286,6 +296,20 @@ A. Employs fewer than three employees
 B. Has the highest number of employees
 C. Has the lowest number of employees
 */
+--18.А
+
+Select
+    d.department_id "Номер департамента",
+    d.department_name "Название департамента",
+    count(employee_id) "Количество работающих"
+From hr.departments d 
+Join hr.employees e 
+On d.department_id = e.department_id
+Group by d.department_id, d.department_name
+Having count(e.employee_id) < 3;
+
+-- 18.В
+
 
 --19.
 /*
@@ -294,12 +318,13 @@ and the average salary in their department for all employees.
 */
 
 Select
-    e.employee_id,
-    e.last_name,
-    e.salary,
-    e.department_id,
-    avg(e.salary)
-From hr.employees e;
+    e.employee_id "Номер",
+    e.last_name "Фамилия",
+    e.salary "ЗП",
+    e.department_id "Номер департамента",
+    round(avg(e.salary) over (partition by e.department_id)) "Средняя ЗП"
+From hr.employees e
+Group by e.employee_id, e.last_name, e.salary, e.department_id;
 
 --20.
 /*

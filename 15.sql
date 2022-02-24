@@ -271,6 +271,17 @@ Create a report to display the department number and lowest salary of the depart
 the highest average salary.
 */
 
+Select
+    department_id,
+    min(salary)
+From hr.employees
+Group by department_id
+Having avg(salary) = (
+                        Select
+                        max(avg(salary))
+                        From hr.employees e
+                        Group by e.department_id
+                        );
 --17.
 /*
 Create a report that displays the departments where no sales representatives work. Include
@@ -296,19 +307,41 @@ A. Employs fewer than three employees
 B. Has the highest number of employees
 C. Has the lowest number of employees
 */
---18.А
-
 Select
-    d.department_id "Номер департамента",
-    d.department_name "Название департамента",
-    count(employee_id) "Количество работающих"
-From hr.departments d 
-Join hr.employees e 
+    d.department_id,
+    d.department_name,
+    count(e.employee_id)
+From hr.departments d
+Join hr.employees e
 On d.department_id = e.department_id
 Group by d.department_id, d.department_name
 Having count(e.employee_id) < 3;
 
--- 18.В
+Select
+    d.department_id,
+    d.department_name,
+    count(e.employee_id)
+From hr.departments d
+Join hr.employees e
+On d.department_id = e.department_id
+Group by d.department_id, d.department_name
+Having count(e.employee_id) = (Select
+                               max(count(1))
+                               From hr.employees m
+                               Group by m.department_id);
+                               
+Select
+    d.department_id,
+    d.department_name,
+    count(e.employee_id)
+From hr.departments d
+Join hr.employees e
+On d.department_id = e.department_id
+Group by d.department_id, d.department_name
+Having count(e.employee_id) = (Select
+                               min(count(1))
+                               From hr.employees m
+                               Group by m.department_id);
 
 
 --19.

@@ -276,5 +276,3 @@ SELECT
 FROM user_col_comments a
 WHERE table_name = 'EMPLOYEES';
 
-
-    'COMMENT ON TABLE HR.EMPL

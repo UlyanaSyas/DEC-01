@@ -87,67 +87,49 @@ AS SELECT * FROM hr.departments;
 
 ALTER TABLE hr.dept2
 ADD CONSTRAINT
-		DEPT2_ID_PK PRIMARY KEY (DEPARTMENT_ID); -- работает
-        
--- Остальные у меня не работают, и я не пойму почему.
+		DEPT2_ID_PK PRIMARY KEY (DEPARTMENT_ID); -- работает        		
         
 ALTER TABLE hr.dept2
 ADD CONSTRAINT
 		DEPT2_LOC_FK FOREIGN KEY (LOCATION_ID)
-        REFERENCE HR.LOCATIONS(LOCATION_ID); -- не работает
+        REFERENCES HR.LOCATIONS(LOCATION_ID); -- работает
         
 ALTER TABLE hr.dept2
 ADD CONSTRAINT DEPT2_MGR_FK 
         FOREIGN KEY (MANAGER_ID)
-	    REFERENCES HR.EMP2 (EMPLOYEE_ID); -- не работает
+	    REFERENCES HR.EMP2 (EMPLOYEE_ID); -- работает
         
-ALTER TABLE hr.dept2
-ADD CONSTRAINT
-		DEPT2_NAME_NN CHECK (DEPARTMENT_NAME) NOT NULL; -- не работает
         
 --EMP2
 CREATE TABLE hr.emp2
 AS SELECT * FROM hr.employees;
 ----------------------------------
+ALTER TABLE hr.emp2
+ADD CONSTRAINT
+		EMP2_EID_PK PRIMARY KEY (EMPLOYEE_ID); -- работает
 
 ALTER TABLE hr.emp2
 ADD CONSTRAINT
 		EMP2_DEPT_FK FOREIGN KEY (DEPARTMENT_ID)
-		REFERENCES hr.dept2 (DEPARTMENT_ID); -- работает
-        
-ALTER TABLE hr.emp2
-ADD CONSTRAINT
-		EMP2_EMAIL_NN CHECK (EMAIL) NOT NULL; -- не работает
-		
+		REFERENCES hr.dept2 (DEPARTMENT_ID); -- работает       
+				
 ALTER TABLE hr.emp2
 ADD CONSTRAINT
 		EMP2_EMAIL_UK UNIQUE (EMAIL); -- работает
 		
 ALTER TABLE hr.emp2
 ADD CONSTRAINT
-		EMP2_EMP_ID_PK PRIMARY KEY (EMPLOYEE_ID); -- работает
-		
-ALTER TABLE hr.emp2
-ADD CONSTRAINT
-		EMP2_HIRE_DATE_NN CHECK (HIRE_DATE) NOT NULL; -- не работает
+		EMP2_EMP_ID_PK PRIMARY KEY (EMPLOYEE_ID); -- работает		
 		
 ALTER TABLE hr.emp2
 ADD CONSTRAINT
 		EMP2_JOB_FK FOREIGN KEY (JOB_ID)
-        REFERENCES hr.jobs (JOB_ID); -- работает
-        
-ALTER TABLE hr.emp2
-ADD CONSTRAINT
-		EMP2_JOB_NN CHECK (JOB_ID) NOT NULL; -- не работает
-        
-ALTER TABLE hr.emp2
-ADD CONSTRAINT
-		EMP2_LAST_NAME_NN CHECK (LAST_NAME) NOT NULL; -- не работает
+        REFERENCES hr.jobs (JOB_ID); -- работает        
         
 ALTER TABLE hr.emp2
 ADD CONSTRAINT
 		EMP2_MANAGER_FK FOREIGN KEY (MANAGER_ID)
-        REFERENCES hr.emp2 (EMPLOYEE_ID);       -- работает
+        REFERENCES hr.emp2 (EMPLOYEE_ID);      -- работает
         
 ALTER TABLE hr.emp2
 ADD CONSTRAINT
@@ -251,7 +233,6 @@ SELECT
     ') ' ||
     a.search_condition_vc ||
     ' ' ||
-    a.status ||
     ';' "CONSTRAINTS"
 FROM user_constraints a
 JOIN user_cons_columns b
@@ -275,4 +256,3 @@ SELECT
     q'[';]' "COMMENTS"
 FROM user_col_comments a
 WHERE table_name = 'EMPLOYEES';
-

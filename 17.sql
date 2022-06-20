@@ -67,7 +67,7 @@ WHERE EMPLOYEE = 'Abel';
 */
 
 SELECT *
-FROM USER_VIEWS;
+FROM USER_VIEWS; --(all)
 
 SELECT 
 	view_name,
